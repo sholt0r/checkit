@@ -9,6 +9,7 @@ ENV PYTHONUNBUFFERED=1
 
 ENV S_TOKEN=
 ENV D_TOKEN=
+ENV S_API_URL=
 
 # Install pip requirements
 COPY requirements.txt .
