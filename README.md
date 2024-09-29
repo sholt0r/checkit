@@ -1,3 +1,5 @@
+[![Checkit CI](https://github.com/sholt0r/checkit/actions/workflows/main.yml/badge.svg)](https://github.com/sholt0r/checkit/actions/workflows/main.yml)
+
 # Discord Bot - Satisfactory Server Manager
 
 This is a Python-based Discord bot designed to manage and interact with a Satisfactory server via API commands. The bot can display the server status and issue restart commands directly from a Discord server.
