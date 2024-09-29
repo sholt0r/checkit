@@ -7,8 +7,8 @@ from discord.ext import commands
 import requests as re
 
 load_dotenv()
-s_token = os.getenv('S_TOKEN')
 d_token = os.getenv('D_TOKEN')
+s_token = os.getenv('S_TOKEN')
 s_api_url = os.getenv('S_API_URL')
 
 def sendRequest(api_url, token, s_func):
