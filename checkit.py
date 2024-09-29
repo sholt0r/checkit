@@ -41,5 +41,4 @@ async def restart(ctx):
     if response:
         await ctx.send("Restarting server.")
 
-
 bot.run(f"{d_token}")
