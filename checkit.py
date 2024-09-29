@@ -4,7 +4,7 @@ import os
 import discord
 from discord.ext import commands
 import requests as re
-import lqa.lqa as lqa
+from .lqa import lqa
 
 d_token = os.getenv('D_TOKEN')
 s_token = os.getenv('S_TOKEN')
