@@ -14,13 +14,16 @@ s_api_url = os.getenv('S_API_URL')
 def sendRequest(api_url, token, s_func):
     headers = {"Content-Type":"application/json", "Authorization":f"Bearer {token}"}
     json = {"function":f"{s_func}"}
-    response = re.post(api_url, headers=headers, json=json)
-    if response.status_code != 200:
+    try:
+        response = re.post(api_url, headers=headers, json=json)
+        if response.status_code != 200:
+            return False
+        if s_func == "QueryServerState":
+            return response.json()['data']['serverGameState']
+        if s_func == "Shutdown":
+            return True
+    except:
         return False
-    if s_func == "QueryServerState":
-        return response.json()['data']['serverGameState']
-    if s_func == "Shutdown":
-        return True
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -34,15 +37,18 @@ async def on_ready():
 async def status(ctx):
     print("Status command issued.")
     status = sendRequest(s_api_url, s_token, "QueryServerState")
+    if not status:
+        await ctx.send(f"The server is not responding.")
+        return
     await ctx.send(f"Active Session: {status['activeSessionName']}\nNumber of Players: {status['numConnectedPlayers']}/{status['playerLimit']}\nTech Tier: {status['techTier']}")
 
 @bot.hybrid_command()
 async def restart(ctx):
     print("Restart command issued.")
     response = sendRequest(s_api_url, s_token, "Shutdown")
-    if response:
-        await ctx.send("Restarting server.")
-    else:
-        print("Failed")
+    if not response:
+        await ctx.send(f"The server is not responding.")
+        return
+    await ctx.send("Restarting server.")
 
 bot.run(f"{d_token}")
