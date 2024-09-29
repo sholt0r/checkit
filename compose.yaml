@@ -1,0 +1,10 @@
+services:
+  checkit:
+    container_name: checkit
+    restart: unless-stopped
+    image: sholt0r/checkit:latest
+    env_file: .env
+    environment:
+      D_TOKEN: "${D_TOKEN}"
+      S_TOKEN: "${S_TOKEN}"
+      S_API_URL: "${S_API_URL}"
