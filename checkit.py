@@ -37,7 +37,7 @@ async def status(ctx):
     print("Status command issued.")
     status = sendRequest(s_api_url, s_token, "QueryServerState")
     if not status:
-        lstate = lqa.poll_server_state(f"S_API_URL")
+        lstate = lqa.lqa.poll_server_state(f"S_API_URL")
         await ctx.send(f"The server state currently {lstate['state']}")
         return
     await ctx.send(f"Active Session: {status['activeSessionName']}\nNumber of Players: {status['numConnectedPlayers']}/{status['playerLimit']}\nTech Tier: {status['techTier']}")
@@ -47,7 +47,7 @@ async def restart(ctx):
     print("Restart command issued.")
     restart = sendRequest(s_api_url, s_token, "Shutdown")
     if not restart:
-        lstate = lqa.poll_server_state(f"S_API_URL")
+        lstate = lqa.lqa.poll_server_state(f"S_API_URL")
         await ctx.send(f"The server state currently {lstate['state']}")
         return
     await ctx.send("Restarting server.")
