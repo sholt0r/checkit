@@ -42,5 +42,7 @@ async def restart(ctx):
     response = sendRequest(s_api_url, s_token, "Shutdown")
     if response:
         await ctx.send("Restarting server.")
+    else:
+        print("Failed")
 
 bot.run(f"{d_token}")
