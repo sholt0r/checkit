@@ -32,11 +32,13 @@ async def on_ready():
 
 @bot.hybrid_command()
 async def status(ctx):
+    print("Status command issued.")
     status = sendRequest(s_api_url, s_token, "QueryServerState")
     await ctx.send(f"Active Session: {status['activeSessionName']}\nNumber of Players: {status['numConnectedPlayers']}/{status['playerLimit']}\nTech Tier: {status['techTier']}")
 
 @bot.hybrid_command()
 async def restart(ctx):
+    print("Restart command issued.")
     response = sendRequest(s_api_url, s_token, "Shutdown")
     if response:
         await ctx.send("Restarting server.")
