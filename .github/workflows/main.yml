@@ -3,8 +3,10 @@ name: Checkit CI
 on:
   push:
     branches: [ "main" ]
+    paths-ignore: [ "README.md", "compose.yaml" ]
   pull_request:
     branches: [ "main" ]
+    paths-ignore: [ "README.md" ]
 
 jobs:
 
