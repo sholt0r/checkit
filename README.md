@@ -1,4 +1,4 @@
-[![Checkit CI](https://github.com/sholt0r/checkit/actions/workflows/main.yml/badge.svg)](https://github.com/sholt0r/checkit/actions/workflows/main.yml)
+[![Dockerhub Build/Push](https://github.com/sholt0r/checkit/actions/workflows/main.yml/badge.svg)](https://github.com/sholt0r/checkit/actions/workflows/main.yml)
 
 # Discord Bot - Satisfactory Server Manager
 
