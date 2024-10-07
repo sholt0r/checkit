@@ -1,4 +1,4 @@
-name: Checkit CI
+name: Dockerhub Build/Push
 
 on:
   push:
