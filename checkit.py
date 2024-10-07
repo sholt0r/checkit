@@ -6,7 +6,7 @@ import discord
 from discord.ext import commands
 from lwapi import lqa, hta
 
-_log = logging.getLogger(__name__)
+_log = logging.getLogger("checkit")
 
 from dotenv import load_dotenv
 load_dotenv()

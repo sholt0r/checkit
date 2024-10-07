@@ -3,4 +3,4 @@
 	url = https://github.com/sholt0r/checkit-lqa
 [submodule "lwapi"]
 	path = lwapi
-	url = http://github.com/sholt0r/checkit-lqa
+	url = https://github.com/sholt0r/checkit-lwapi
