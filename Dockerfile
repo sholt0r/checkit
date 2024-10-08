@@ -17,7 +17,7 @@ RUN python -m pip install -r requirements.txt
 
 WORKDIR /app
 COPY checkit.py /app/checkit.py
-COPY lwapi/ /app/lwapi/
+ADD lwapi /app/lwapi
 
 # Creates a non-root user with an explicit UID and adds permission to access the /app folder
 # For more info, please refer to https://aka.ms/vscode-docker-python-configure-containers
