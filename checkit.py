@@ -5,7 +5,7 @@ import sys
 import logging
 import discord
 from discord.ext import commands
-from lwapi import lqa, hta
+from lwapi import hta#, lqa
 
 handler = logging.StreamHandler()
 formatter = discord.utils._ColourFormatter()
@@ -33,20 +33,22 @@ async def on_ready():
 @bot.hybrid_command()
 async def status(ctx):
     logger.info("Status command issued.")
-    lstate = lqa.poll_server_state(f"{S_API_URL}", logger)
+    #lstate = lqa.poll_server_state(f"{S_API_URL}", logger)
     status = hta.send_http_request(S_API_URL, S_TOKEN, "QueryServerState", logger)
     if not status:
-        await ctx.send(f"The server state currently {lstate}")
+        #await ctx.send(f"The server state currently {lstate}")
+        await ctx.send(f"The server is not responding")
         return
     await ctx.send(f"Active Session: {status['activeSessionName']}\nNumber of Players: {status['numConnectedPlayers']}/{status['playerLimit']}\nTech Tier: {status['techTier']}")
 
 @bot.hybrid_command()
 async def restart(ctx):
     logger.info("Restart command issued.")
-    lstate = lqa.poll_server_state(f"{S_API_URL}", logger)
+    #lstate = lqa.poll_server_state(f"{S_API_URL}", logger)
     restart = hta.send_http_request(S_API_URL, S_TOKEN, "Shutdown", logger)
     if not restart:
-        await ctx.send(f"The server state currently {lstate}")
+        #await ctx.send(f"The server state currently {lstate}")
+        await ctx.send(f"The server is not responding")
         return
     await ctx.send("Restarting server.")
 
