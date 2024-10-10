@@ -8,7 +8,8 @@ from lwapi import hta#, lqa
 # Constants
 D_TOKEN = os.getenv('D_TOKEN')
 S_TOKEN = os.getenv('S_TOKEN')
-S_API_URL = os.getenv('S_API_URL')
+S_API_HOST = os.getenv('S_API_HOST')
+S_API_PORT = os.getenv('S_PORT', 7777)
 LOGGER_NAME = "checkit"
 
 handler = logging.StreamHandler()
@@ -30,7 +31,7 @@ async def on_ready():
 async def status(ctx):
     logger.info("Status command issued.")
     #lstate = lqa.poll_server_state(f"{S_API_URL}", logger)
-    status = hta.send_http_request(S_API_URL, S_TOKEN, "QueryServerState", LOGGER_NAME)
+    status = hta.send_http_request(S_API_HOST, S_API_PORT, S_TOKEN, "QueryServerState", LOGGER_NAME)
     if not status:
         #await ctx.send(f"The server state currently {lstate}")
         await ctx.send(f"The server is not responding")
@@ -41,7 +42,7 @@ async def status(ctx):
 async def restart(ctx):
     logger.info("Restart command issued.")
     #lstate = lqa.poll_server_state(f"{S_API_URL}", logger)
-    restart = hta.send_http_request(S_API_URL, S_TOKEN, "Shutdown", LOGGER_NAME)
+    restart = hta.send_http_request(S_API_HOST, S_API_PORT, S_TOKEN, "Shutdown", LOGGER_NAME)
     if not restart:
         #await ctx.send(f"The server state currently {lstate}")
         await ctx.send(f"The server is not responding")
