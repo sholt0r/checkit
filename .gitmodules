@@ -1,6 +1,6 @@
 [submodule "lqa"]
 	path = lqa
 	url = https://github.com/sholt0r/checkit-lqa
-[submodule "lwapi"]
-	path = lwapi
-	url = https://github.com/sholt0r/checkit-lwapi
+[submodule "common"]
+	path = common
+	url = http://github.com/sholt0r/checkit-common

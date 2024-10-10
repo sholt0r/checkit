@@ -7,4 +7,4 @@ services:
     environment:
       D_TOKEN: "${D_TOKEN}"
       S_TOKEN: "${S_TOKEN}"
-      S_API_URL: "${S_API_URL}"
+      S_API_HOST: "${S_API_HOST}"
