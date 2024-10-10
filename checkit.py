@@ -11,7 +11,7 @@ S_TOKEN = os.getenv('S_TOKEN')
 S_API_HOST = os.getenv('S_API_HOST')
 S_API_PORT = os.getenv('S_PORT', 7777)
 
-logger = log.setup_logger()
+logger = log.setup_logger("checkit")
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -25,7 +25,7 @@ async def on_ready():
 async def status(ctx):
     logger.info("Status command issued.")
     #lstate = lqa.poll_server_state(S_API_HOST, S_API_PORT, logger)
-    status = hta.send_http_request(S_API_HOST, S_API_PORT, S_TOKEN, "QueryServerState")
+    status = hta.send_http_request(S_API_HOST, S_API_PORT, S_TOKEN, "QueryServerState", "checkit.hta")
     if not status:
         #await ctx.send(f"The server state currently {lstate}")
         await ctx.send(f"The server is not responding")
@@ -36,7 +36,7 @@ async def status(ctx):
 async def restart(ctx):
     logger.info("Restart command issued.")
     #lstate = lqa.poll_server_state(S_API_HOST, S_API_PORT, logger)
-    restart = hta.send_http_request(S_API_HOST, S_API_PORT, S_TOKEN, "Shutdown")
+    restart = hta.send_http_request(S_API_HOST, S_API_PORT, S_TOKEN, "Shutdown", "checkit.hta")
     if not restart:
         #await ctx.send(f"The server state currently {lstate}")
         await ctx.send(f"The server is not responding")
