@@ -14,9 +14,6 @@ handler.setFormatter(formatter)
 logger.setLevel(logging.INFO)
 logger.addHandler(handler)
 
-from dotenv import load_dotenv
-load_dotenv()
-
 # Bot constants
 D_TOKEN = os.getenv('D_TOKEN')
 S_TOKEN = os.getenv('S_TOKEN')
