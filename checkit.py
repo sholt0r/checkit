@@ -3,21 +3,15 @@ import sys
 import logging
 import discord
 from discord.ext import commands
-from lwapi import hta#, lqa
+from common import hta, log
 
 # Constants
 D_TOKEN = os.getenv('D_TOKEN')
 S_TOKEN = os.getenv('S_TOKEN')
 S_API_HOST = os.getenv('S_API_HOST')
 S_API_PORT = os.getenv('S_PORT', 7777)
-LOGGER_NAME = "checkit"
 
-handler = logging.StreamHandler()
-formatter = discord.utils._ColourFormatter()
-logger = logging.getLogger(LOGGER_NAME)
-handler.setFormatter(formatter)
-logger.setLevel(logging.INFO)
-logger.addHandler(handler)
+logger = log.setup_logger()
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -30,8 +24,8 @@ async def on_ready():
 @bot.hybrid_command()
 async def status(ctx):
     logger.info("Status command issued.")
-    #lstate = lqa.poll_server_state(f"{S_API_URL}", logger)
-    status = hta.send_http_request(S_API_HOST, S_API_PORT, S_TOKEN, "QueryServerState", LOGGER_NAME)
+    #lstate = lqa.poll_server_state(S_API_HOST, S_API_PORT, logger)
+    status = hta.send_http_request(S_API_HOST, S_API_PORT, S_TOKEN, "QueryServerState")
     if not status:
         #await ctx.send(f"The server state currently {lstate}")
         await ctx.send(f"The server is not responding")
@@ -41,8 +35,8 @@ async def status(ctx):
 @bot.hybrid_command()
 async def restart(ctx):
     logger.info("Restart command issued.")
-    #lstate = lqa.poll_server_state(f"{S_API_URL}", logger)
-    restart = hta.send_http_request(S_API_HOST, S_API_PORT, S_TOKEN, "Shutdown", LOGGER_NAME)
+    #lstate = lqa.poll_server_state(S_API_HOST, S_API_PORT, logger)
+    restart = hta.send_http_request(S_API_HOST, S_API_PORT, S_TOKEN, "Shutdown")
     if not restart:
         #await ctx.send(f"The server state currently {lstate}")
         await ctx.send(f"The server is not responding")
