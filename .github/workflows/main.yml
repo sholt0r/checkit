@@ -2,10 +2,7 @@ name: Dockerhub Build/Push
 
 on:
   push:
-    branches: [ "main" ]
-    paths-ignore: [ "**/README.md", "**/compose.yaml" ]
-  pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
     paths-ignore: [ "**/README.md", "**/compose.yaml" ]
 
 jobs:
