@@ -47,6 +47,7 @@ class HTTPServerState:
 
         self.update_local_state()
 
+
     def query_server_state(self):
         logger.info("Query server state.")
         json = {'function': 'QueryServerState'}
@@ -125,19 +126,21 @@ def poll_server_state(host, port, poll_interval=0.05):
 def track_state(host, http_server_state, port=7777, poll_interval=0.05):
     previous_state = None
     while True:
-        state = poll_server_state(host, port)
-        if previous_state is None:
+        try:
+            state = poll_server_state(host, port)
+            if previous_state is None:
+                previous_state = state
+
+            logger.info(state.num_sub_states)
+            if state.num_sub_states != previous_state.num_sub_states:
+                http_server_state.update_local_state()
+                logger.info("State Updated")
+
             previous_state = state
+            time.sleep(poll_interval)
+        except:
+            continue
 
-        logger.info(state.num_sub_states)
-        if state.num_sub_states != previous_state.num_sub_states:
-            http_server_state.update_local_state()
-            logger.info("State Updated")
-
-        previous_state = state
-        time.sleep(poll_interval)
-
-http_server_state = HTTPServerState(HOST, S_TOKEN)
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -161,6 +164,7 @@ async def restart(ctx):
     await ctx.send("Restarting server.")
 
 
+http_server_state = HTTPServerState(HOST, S_TOKEN)
 thread = threading.Thread(target=track_state(HOST, http_server_state))
 thread.start()
 
