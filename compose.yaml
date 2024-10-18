@@ -2,7 +2,7 @@ services:
   checkit:
     container_name: checkit
     restart: unless-stopped
-    image: sholt0r/checkit:latest
+    image: sholt0r/checkit:dev
     env_file: .env
     environment:
       D_TOKEN: "${D_TOKEN}"
