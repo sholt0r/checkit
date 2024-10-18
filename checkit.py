@@ -140,7 +140,7 @@ async def track_state(host, http_server_state, port=7777, poll_interval=0.05):
 
 
 http_server_state = HTTPServerState(HOST, S_TOKEN)
-server_state = track_state(HOST, http_server_state)
+server_state = asyncio.run(track_state(HOST, http_server_state))
 
 intents = discord.Intents.default()
 intents.message_content = True
