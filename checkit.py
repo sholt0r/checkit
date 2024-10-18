@@ -50,8 +50,8 @@ class HTTPServerState:
         logger.info("Query server state.")
         json = {'function': 'QueryServerState'}
         response = re.post(self.url, self.headers, json)
-        state = response.json()['data']['serverGameState']
-        return state
+        print(response)
+        return response.json()['data']['serverGameState']
 
 
     def restart_server(self):
