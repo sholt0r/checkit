@@ -166,7 +166,7 @@ async def restart(ctx):
 async def main():
     tasks = [
         bot.run(f"{D_TOKEN}"),
-        asyncio.run(track_state(HOST, http_server_state))
+        track_state(HOST, http_server_state)
     ]
 
     await asyncio.gather(*tasks)
