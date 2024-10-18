@@ -17,6 +17,7 @@ PROTOCOL_VERSION = 1
 MESSAGE_TYPE_POLL = 0
 MESSAGE_TYPE_RESPONSE = 1
 
+
 logger = log.setup_logger()
 
 
@@ -162,6 +163,6 @@ async def restart(ctx):
     await ctx.send("Restarting server.")
 
 
+asyncio.run(track_state(HOST, http_server_state))
 bot.run(f"{D_TOKEN}")
-server_state = asyncio.run(track_state(HOST, http_server_state))
 
