@@ -163,6 +163,6 @@ async def restart(ctx):
     await ctx.send("Restarting server.")
 
 
-asyncio.run(track_state(HOST, http_server_state))
 bot.run(f"{D_TOKEN}")
+asyncio.run(track_state(HOST, http_server_state))
 
