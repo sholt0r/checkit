@@ -50,6 +50,9 @@ class HTTPServerState:
         logger.info("Query server state.")
         json = {'function': 'QueryServerState'}
         response = re.post(self.url, self.headers, json)
+        if response.status_code not in (200, 204):
+            logger.error(f"Status code {response.status_code}.")
+            return
         print(response)
         return response.json()['data']['serverGameState']
 
