@@ -1,4 +1,4 @@
-import os, discord, socket, struct, time, select, threading
+import os, discord, socket, struct, time, select, multiprocessing
 import requests as re
 from discord.ext import commands
 from common import log
@@ -164,8 +164,8 @@ async def restart(ctx):
 
 
 http_server_state = HTTPServerState(HOST, S_TOKEN)
-thread = threading.Thread(target=track_state(HOST, http_server_state))
-thread.start()
+state_proc = multiprocessing.Process(target=track_state(HOST, http_server_state))
+state_proc.start()
 
 bot.run(f"{D_TOKEN}")
 
