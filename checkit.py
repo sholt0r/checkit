@@ -80,7 +80,7 @@ class HTTPServerState:
                 f"Tech Tier: {self.tech_tier}")
 
 
-async def poll_server_state(host, port, poll_interval):
+def poll_server_state(host, port, poll_interval=0.05):
     server = (host, port)
     c_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     c_sock.setblocking(False)
@@ -123,9 +123,9 @@ async def poll_server_state(host, port, poll_interval):
         c_sock.close()
 
 
-@tasks.loop(seconds=0.05)
+@tasks.loop()
 async def track_state(host, http_server_state, port=7777, poll_interval=0.05):
-    previous_state = None
+    previous_state = True
     while True:
         try:
             state = poll_server_state(host, port)
@@ -166,6 +166,7 @@ async def restart(ctx):
 
 http_server_state = HTTPServerState(HOST, S_TOKEN)
 track_state.start(HOST, http_server_state)
+
 
 bot.run(f"{D_TOKEN}")
 
