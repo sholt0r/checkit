@@ -95,7 +95,7 @@ def poll_server_state(host, port, poll_interval=0.05):
             response, _ = c_sock.recvfrom(1024)
             response_len = len(response)
             if response_len < 22:
-                raise ValueError(f"Response too short: {response_len} bytes")
+                logger.error(f"Response too short: {response_len} bytes")
             
             header_format = '<HBBQBIQB'
             header_size = struct.calcsize(header_format)
@@ -126,14 +126,13 @@ async def track_state(host, http_server_state, port=7777, poll_interval=0.05):
     previous_state = None
     while True:
         state = poll_server_state(host, port)
-        logger.debug("Polling server")
         if previous_state is None:
             previous_state = state
+            logger.debug(state)
 
-        print(state.num_sub_states)
         if state.num_sub_states != previous_state.num_sub_states:
-            logger.info("State Updated")
             http_server_state.update_local_state()
+            logger.info("State Updated")
 
         previous_state = state
         await asyncio.sleep(poll_interval)
