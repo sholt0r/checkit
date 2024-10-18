@@ -28,6 +28,9 @@ jobs:
         secrets: |
           359eca86-fe87-41dc-9888-b20501874e56 > DOCKERHUB_TOKEN
 
+    - name: Branch Name
+      run: echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
 
