@@ -124,7 +124,7 @@ def poll_server_state(host, port, poll_interval=0.05):
         c_sock.close()
 
 
-async def track_state(host, port, http_server_state, poll_interval=0.05):
+async def track_state(host, http_server_state, poll_interval=0.05):
     previous_state = None
     while True:
         state = poll_server_state(host, port)
