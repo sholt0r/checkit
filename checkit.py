@@ -17,6 +17,7 @@ PROTOCOL_VERSION = 1
 MESSAGE_TYPE_POLL = 0
 MESSAGE_TYPE_RESPONSE = 1
 
+logger = log.setup_logger()
 
 class LWAResponse:
     def __init__(self, protocol_magic, message_type, protocol_version, response_cookie, server_state, server_net_cl, server_flags, num_sub_states):
@@ -125,6 +126,7 @@ async def track_state(host, http_server_state, port=7777, poll_interval=0.05):
     previous_state = None
     while True:
         state = poll_server_state(host, port)
+        logger.info("Polling server")
         if previous_state is None:
             previous_state = state
 
@@ -136,7 +138,6 @@ async def track_state(host, http_server_state, port=7777, poll_interval=0.05):
         await asyncio.sleep(poll_interval)
 
 
-logger = log.setup_logger()
 
 http_server_state = HTTPServerState(HOST, S_TOKEN)
 server_state = track_state(HOST, http_server_state)
