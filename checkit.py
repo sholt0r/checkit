@@ -124,7 +124,7 @@ async def poll_server_state(host, port, poll_interval):
 
 
 @tasks.loop(seconds=0.05)
-def track_state(host, http_server_state, port=7777, poll_interval=0.05):
+async def track_state(host, http_server_state, port=7777, poll_interval=0.05):
     previous_state = None
     while True:
         try:
