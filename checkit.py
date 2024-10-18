@@ -46,19 +46,11 @@ class HTTPServerState:
         self.update_local_state()
 
 
-    def get_nested(self, dictionary, keys, default=None):
-        for key in keys:
-            dictionary = dictionary.get(key, default)
-            if dictionary is default:
-                break
-        return dictionary
-
-
     def query_server_state(self):
         logger.info("Query server state.")
         json = {'function': 'QueryServerState'}
         response = re.post(self.url, self.headers, json)
-        state = self.get_nested(response, ['data', 'serverGameState'], 'Unknown Response')
+        state = response.json()['data', 'serverGameState']
         return state
 
 
