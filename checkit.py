@@ -45,13 +45,6 @@ class HTTPServerState:
 
         self.update_local_state()
 
-        print(self.host)
-        print(self.port)
-        print(self.token)
-        print(self.url)
-        print(self.headers)
-
-
     def query_server_state(self):
         logger.info("Query server state.")
         json = {'function': 'QueryServerState'}
@@ -73,6 +66,7 @@ class HTTPServerState:
     def update_local_state(self):
         logger.info("Updating local state.")
         self.local_state = self.query_server_state()
+        print(self.local_state)
         self.active_session = self.local_state.get('activeSessionName')
         self.num_players = self.local_state.get('numConnectedPlayers')
         self.player_limit = self.local_state.get('playerLimit')
