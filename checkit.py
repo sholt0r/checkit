@@ -72,6 +72,7 @@ class HTTPServerState:
     def update_local_state(self):
         logger.info("Updating local state.")
         self.local_state = self.query_server_state()
+        print(self.local_state)
         self.active_session = self.local_state.get('activeSessionName')
         self.num_players = self.local_state.get('numConnectedPlayers')
         self.player_limit = self.local_state.get('playerLimit')
