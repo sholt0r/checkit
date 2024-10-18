@@ -45,6 +45,12 @@ class HTTPServerState:
 
         self.update_local_state()
 
+        print(self.host)
+        print(self.port)
+        print(self.token)
+        print(self.url)
+        print(self.headers)
+
 
     def query_server_state(self):
         logger.info("Query server state.")
