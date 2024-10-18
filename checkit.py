@@ -32,7 +32,7 @@ class LWAResponse:
 
 
 class HTTPServerState:
-    def __init__(self, host, port, token):
+    def __init__(self, host, token, port=7777):
         self.host = host
         self.port = port
         self.token = token
