@@ -7,8 +7,8 @@ from common import log
 # Bot Constants
 D_TOKEN = os.getenv('D_TOKEN')
 S_TOKEN = os.getenv('S_TOKEN')
-HOST = os.getenv('S_API_HOST')
-PORT = os.getenv('S_PORT', 7777)
+HOST = os.getenv('HOST')
+PORT = os.getenv('PORT', 7777)
 
 
 # LWAPI Constants
