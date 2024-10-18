@@ -123,24 +123,21 @@ def poll_server_state(host, port, poll_interval=0.05):
         c_sock.close()
 
 
-@tasks.loop()
-async def track_state(host, http_server_state, port=7777, poll_interval=0.05):
-    previous_state = True
-    while True:
-        try:
-            state = poll_server_state(host, port)
-            if previous_state is None:
-                previous_state = state
-
-            if state.num_sub_states != previous_state.num_sub_states:
-                http_server_state.update_local_state()
-                logger.info("State Updated")
-
+@tasks.loop(seconds=0.05)
+async def track_state(host, http_server_state, port=7777, poll_interval=0.05, previous_state=None):
+    try:
+        state = poll_server_state(host, port)
+        if previous_state is None:
             previous_state = state
-            time.sleep(poll_interval)
-        except:
-            continue
 
+        if state.num_sub_states != previous_state.num_sub_states:
+            http_server_state.update_local_state()
+            logger.info("State Updated")
+
+        previous_state = state
+        time.sleep(poll_interval)
+    except:
+        return
 
 intents = discord.Intents.default()
 intents.message_content = True
