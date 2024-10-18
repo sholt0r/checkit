@@ -140,8 +140,8 @@ async def track_state(host, http_server_state, poll_interval=0.05):
 
 logger = log.setup_logger()
 
-http_server_state = HTTPServerState(HOST, PORT, S_TOKEN)
-server_state = track_state(HOST, PORT, http_server_state)
+http_server_state = HTTPServerState(HOST, S_TOKEN)
+server_state = track_state(HOST, http_server_state)
 
 intents = discord.Intents.default()
 intents.message_content = True
