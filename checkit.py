@@ -1,4 +1,4 @@
-import os, discord, asyncio, socket, struct, time, select
+import os, discord, socket, struct, time, select, threading
 import requests as re
 from discord.ext import commands
 from common import log
@@ -118,13 +118,11 @@ def poll_server_state(host, port, poll_interval=0.05):
             return state
 
 
-    except asyncio.CancelledError:
-        return False, "err_can"
     finally:
         c_sock.close()
 
 
-async def track_state(host, http_server_state, port=7777, poll_interval=0.05):
+def track_state(host, http_server_state, port=7777, poll_interval=0.05):
     previous_state = None
     while True:
         state = poll_server_state(host, port)
@@ -137,7 +135,7 @@ async def track_state(host, http_server_state, port=7777, poll_interval=0.05):
             logger.info("State Updated")
 
         previous_state = state
-        await asyncio.sleep(poll_interval)
+        time.sleep(poll_interval)
 
 http_server_state = HTTPServerState(HOST, S_TOKEN)
 
@@ -163,12 +161,8 @@ async def restart(ctx):
     await ctx.send("Restarting server.")
 
 
-async def main():
-    tasks = [
-        bot.run(f"{D_TOKEN}"),
-        track_state(HOST, http_server_state)
-    ]
+thread = threading.Thread(target=track_state(HOST, http_server_state))
+thread.start()
 
-    await asyncio.gather(*tasks)
+bot.run(f"{D_TOKEN}")
 
-asyncio.run(main())
