@@ -55,6 +55,7 @@ class HTTPServerState:
 
 
     def query_server_state(self):
+        logger.info("Query server state.")
         json = {'function': 'QueryServerState'}
         response = re.post(self.url, self.headers, json)
         state = self.get_nested(response.json(), ['data', 'serverGameState'], 'Unknown Response')
@@ -62,12 +63,14 @@ class HTTPServerState:
 
 
     def restart_server(self):
+        logger.info("Restarting server.")
         json = {'function': 'Shutdown'}
         re.post(self.url, self.headers, json)
         return True
 
 
     def update_local_state(self):
+        logger.info("Updating local state.")
         self.local_state = self.query_server_state()
         self.active_session = self.local_state.get('activeSessionName')
         self.num_players = self.local_state.get('numConnectedPlayers')
@@ -109,13 +112,13 @@ def poll_server_state(host, port, poll_interval=0.05):
             server_name_length = struct.unpack_from('<H', response, server_name_length_offset)[0]
 
             if state.protocol_magic != PROTOCOL_MAGIC or state.message_type != MESSAGE_TYPE_RESPONSE or state.cookie != cookie:
-                raise ValueError('Unexpected state or mismatched cookie.')
+                logger.error('Unexpected state or mismatched cookie.')
 
             if response_len < header_size + sub_states_size + 2:  # 2 bytes for server name length
-                raise ValueError("Response does not contain enough data for sub-states or server name length")
+                logger.error("Response does not contain enough data for sub-states or server name length")
 
             if response_len < server_name_length_offset + 2 + server_name_length:
-                raise ValueError(f"Response too short to contain server name. Expected at least {server_name_length_offset + 2 + server_name_length}, got {response_len}")
+                logger.error(f"Response too short to contain server name. Expected at least {server_name_length_offset + 2 + server_name_length}, got {response_len}")
 
             return response
 
