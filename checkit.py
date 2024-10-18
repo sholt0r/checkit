@@ -1,14 +1,149 @@
-import os, sys, logging, discord, asyncio
+import os, discord, asyncio, socket, struct, time, select
+import requests as re
 from discord.ext import commands
-from common import hta, lqa, log
+from common import log
 
-# Constants
+
+# Bot Constants
 D_TOKEN = os.getenv('D_TOKEN')
 S_TOKEN = os.getenv('S_TOKEN')
 HOST = os.getenv('S_API_HOST')
 PORT = os.getenv('S_PORT', 7777)
 
+
+# LWAPI Constants
+PROTOCOL_MAGIC = 0xF6D5
+PROTOCOL_VERSION = 1
+MESSAGE_TYPE_POLL = 0
+MESSAGE_TYPE_RESPONSE = 1
+
+
+class LWAResponse:
+    def __init__(self, protocol_magic, message_type, protocol_version, response_cookie,
+                 server_state, server_net_cl, server_flags, num_sub_states):
+        self.protocol_magic = protocol_magic
+        self.message_type = message_type
+        self.protocol_version = protocol_version
+        self.cookie = response_cookie
+        self.server_state = server_state
+        self.server_net_cl = server_net_cl
+        self.server_flags = server_flags
+        self.num_sub_states = num_sub_states
+
+
+class HTTPServerState:
+    def __init__(self, host, port, token):
+        self.host = host
+        self.port = port
+        self.token = token
+
+        self.url = f'https://{self.host}:{self.port}/api/v1'
+        self.headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {self.token}' 
+        }
+
+        self.update_local_state()
+
+
+    def get_nested(self, dictionary, keys, default=None):
+        for key in keys:
+            dictionary = dictionary.get(key, default)
+            if dictionary is default:
+                break
+        return dictionary
+
+
+    def query_server_state(self):
+        json = {'function': 'QueryServerState'}
+        response = re.post(self.url, self.headers, json)
+        state = self.get_nested(response.json(), ['data', 'serverGameState'], 'Unknown Response')
+        return state
+
+
+    def restart_server(self):
+        json = {'function': 'Shutdown'}
+        re.post(self.url, self.headers, json)
+        return True
+
+
+    def update_local_state(self):
+        self.local_state = self.query_server_state()
+        self.active_session = self.local_state.get('activeSessionName')
+        self.num_players = self.local_state.get('numConnectedPlayers')
+        self.player_limit = self.local_state.get('playerLimit')
+        self.tech_tier = self.local_state.get('techTier')
+
+
+    def __repr__(self):
+        return (f"Active Session: {self.active_session}\n"
+                f"Number of Players: {self.active_session}/{self.player_limit}\n"
+                f"Tech Tier: {self.tech_tier}")
+
+
+def poll_server_state(host, port, poll_interval=0.05):
+    server = (host, port)
+    c_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    c_sock.setblocking(False)
+
+    try:
+        # Generate message with unique cookie
+        cookie = int(time.time() * 1000)
+        request_message = struct.pack('<HBBQ', PROTOCOL_MAGIC, MESSAGE_TYPE_POLL, PROTOCOL_VERSION, cookie) + b'\x01'
+
+        c_sock.sendto(request_message, server)
+
+        ready_to_read, _, _ = select.select([c_sock], [], [], poll_interval)
+
+        if ready_to_read:
+            response, _ = c_sock.recvfrom(1024)
+            response_len = len(response)
+            if response_len < 22:
+                raise ValueError(f"Response too short: {response_len} bytes")
+            
+            header_format = '<HBBQBIQB'
+            header_size = struct.calcsize(header_format)
+            state = LWAResponse(*struct.unpack_from(header_format, response, 0))
+            sub_states_size = state.num_sub_states * 3
+            server_name_length_offset = header_size + sub_states_size
+            server_name_length = struct.unpack_from('<H', response, server_name_length_offset)[0]
+
+            if state.protocol_magic != PROTOCOL_MAGIC or state.message_type != MESSAGE_TYPE_RESPONSE or state.cookie != cookie:
+                raise ValueError('Unexpected state or mismatched cookie.')
+
+            if response_len < header_size + sub_states_size + 2:  # 2 bytes for server name length
+                raise ValueError("Response does not contain enough data for sub-states or server name length")
+
+            if response_len < server_name_length_offset + 2 + server_name_length:
+                raise ValueError(f"Response too short to contain server name. Expected at least {server_name_length_offset + 2 + server_name_length}, got {response_len}")
+
+            return response
+
+
+    except asyncio.CancelledError:
+        return False, "err_can"
+    finally:
+        c_sock.close()
+
+
+async def track_state(host, port, http_server_state, poll_interval=0.05):
+    previous_state = None
+    while True:
+        state = poll_server_state(host, port)
+        if previous_state is None:
+            previous_state = state
+
+        if state.num_sub_states != previous_state.num_sub_states:
+            http_server_state.update_local_state()
+
+        previous_state = state
+        await asyncio.sleep(poll_interval)
+
+
 logger = log.setup_logger()
+
+http_server_state = HTTPServerState(HOST, PORT, S_TOKEN)
+server_state = track_state(HOST, PORT, http_server_state)
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -23,18 +158,12 @@ async def on_ready():
 @bot.hybrid_command()
 async def status(ctx):
     logger.info("Status command issued.")
-    if not status:
-        await ctx.send("The server is not responding")
-        return
-    await ctx.send(f"Active Session: {status['activeSessionName']}\nNumber of Players: {status['numConnectedPlayers']}/{status['playerLimit']}\nTech Tier: {status['techTier']}")
+    await ctx.send(f"Active Session: {http_server_state.active_session}\nNumber of Players: {http_server_state.num_players}/{http_server_state.player_limit}\nTech Tier: {http_server_state.tech_tier}")
 
 
 @bot.hybrid_command()
 async def restart(ctx):
     logger.info("Restart command issued.")
-    if not restart:
-        await ctx.send("The server is not responding")
-        return
     await ctx.send("Restarting server.")
 
 bot.run(f"{D_TOKEN}")
