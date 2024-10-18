@@ -19,8 +19,7 @@ MESSAGE_TYPE_RESPONSE = 1
 
 
 class LWAResponse:
-    def __init__(self, protocol_magic, message_type, protocol_version, response_cookie,
-                 server_state, server_net_cl, server_flags, num_sub_states):
+    def __init__(self, protocol_magic, message_type, protocol_version, response_cookie, server_state, server_net_cl, server_flags, num_sub_states):
         self.protocol_magic = protocol_magic
         self.message_type = message_type
         self.protocol_version = protocol_version
@@ -48,11 +47,10 @@ class HTTPServerState:
     def query_server_state(self):
         logger.info("Query server state.")
         json = {'function': 'QueryServerState'}
-        response = re.post(self.url, self.headers, json)
+        response = re.post(self.url, headers=self.headers, json=json)
         if response.status_code not in (200, 204):
             logger.error(f"Status code {response.status_code}.")
             return
-        print(response)
         return response.json()['data']['serverGameState']
 
 
@@ -66,7 +64,6 @@ class HTTPServerState:
     def update_local_state(self):
         logger.info("Updating local state.")
         self.local_state = self.query_server_state()
-        print(self.local_state)
         self.active_session = self.local_state.get('activeSessionName')
         self.num_players = self.local_state.get('numConnectedPlayers')
         self.player_limit = self.local_state.get('playerLimit')
