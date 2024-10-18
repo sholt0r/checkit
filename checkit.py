@@ -100,7 +100,6 @@ def poll_server_state(host, port, poll_interval=0.05):
             header_format = '<HBBQBIQB'
             header_size = struct.calcsize(header_format)
             state = LWAResponse(*struct.unpack_from(header_format, response, 0))
-            print(state)
             sub_states_size = state.num_sub_states * 3
             server_name_length_offset = header_size + sub_states_size
             server_name_length = struct.unpack_from('<H', response, server_name_length_offset)[0]
@@ -114,7 +113,7 @@ def poll_server_state(host, port, poll_interval=0.05):
             if response_len < server_name_length_offset + 2 + server_name_length:
                 logger.error(f"Response too short to contain server name. Expected at least {server_name_length_offset + 2 + server_name_length}, got {response_len}")
 
-            return response
+            return state
 
 
     except asyncio.CancelledError:
@@ -127,7 +126,7 @@ async def track_state(host, http_server_state, port=7777, poll_interval=0.05):
     previous_state = None
     while True:
         state = poll_server_state(host, port)
-        logger.info("Polling server")
+        logger.debug("Polling server")
         if previous_state is None:
             previous_state = state
 
