@@ -19,6 +19,7 @@ MESSAGE_TYPE_RESPONSE = 1
 
 logger = log.setup_logger()
 
+
 class LWAResponse:
     def __init__(self, protocol_magic, message_type, protocol_version, response_cookie, server_state, server_net_cl, server_flags, num_sub_states):
         self.protocol_magic = protocol_magic
@@ -137,6 +138,7 @@ async def track_state(host, http_server_state, port=7777, poll_interval=0.05):
         previous_state = state
         await asyncio.sleep(poll_interval)
 
+http_server_state = HTTPServerState(HOST, S_TOKEN)
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -161,6 +163,5 @@ async def restart(ctx):
 
 
 bot.run(f"{D_TOKEN}")
-http_server_state = HTTPServerState(HOST, S_TOKEN)
 server_state = asyncio.run(track_state(HOST, http_server_state))
 
