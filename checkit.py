@@ -100,6 +100,7 @@ def poll_server_state(host, port, poll_interval=0.05):
             header_format = '<HBBQBIQB'
             header_size = struct.calcsize(header_format)
             state = LWAResponse(*struct.unpack_from(header_format, response, 0))
+            print(state)
             sub_states_size = state.num_sub_states * 3
             server_name_length_offset = header_size + sub_states_size
             server_name_length = struct.unpack_from('<H', response, server_name_length_offset)[0]
