@@ -130,6 +130,7 @@ async def track_state(host, http_server_state, port=7777, poll_interval=0.05):
         if previous_state is None:
             previous_state = state
 
+        print(state.num_sub_states)
         if state.num_sub_states != previous_state.num_sub_states:
             logger.info("State Updated")
             http_server_state.update_local_state()
