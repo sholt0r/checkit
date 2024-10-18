@@ -1,6 +1,6 @@
-import os, discord, socket, struct, time, select, multiprocessing
+import os, discord, socket, struct, time, select 
 import requests as re
-from discord.ext import commands
+from discord.ext import commands, tasks
 from common import log
 
 
@@ -80,7 +80,7 @@ class HTTPServerState:
                 f"Tech Tier: {self.tech_tier}")
 
 
-def poll_server_state(host, port, poll_interval=0.05):
+async def poll_server_state(host, port, poll_interval):
     server = (host, port)
     c_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     c_sock.setblocking(False)
@@ -123,6 +123,7 @@ def poll_server_state(host, port, poll_interval=0.05):
         c_sock.close()
 
 
+@tasks.loop(seconds=0.05)
 def track_state(host, http_server_state, port=7777, poll_interval=0.05):
     previous_state = None
     while True:
@@ -164,8 +165,7 @@ async def restart(ctx):
 
 
 http_server_state = HTTPServerState(HOST, S_TOKEN)
-state_proc = multiprocessing.Process(target=track_state(HOST, http_server_state))
-state_proc.start()
+track_state.start(HOST, http_server_state)
 
 bot.run(f"{D_TOKEN}")
 
