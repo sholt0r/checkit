@@ -50,7 +50,7 @@ class HTTPServerState:
         logger.info("Query server state.")
         json = {'function': 'QueryServerState'}
         response = re.post(self.url, self.headers, json)
-        state = response.json()['data', 'serverGameState']
+        state = response.json()['data']['serverGameState']
         return state
 
 
