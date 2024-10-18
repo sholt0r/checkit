@@ -138,10 +138,6 @@ async def track_state(host, http_server_state, port=7777, poll_interval=0.05):
         await asyncio.sleep(poll_interval)
 
 
-
-http_server_state = HTTPServerState(HOST, S_TOKEN)
-server_state = asyncio.run(track_state(HOST, http_server_state))
-
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix='ficsit ', intents=intents)
@@ -163,4 +159,8 @@ async def restart(ctx):
     logger.info("Restart command issued.")
     await ctx.send("Restarting server.")
 
+
 bot.run(f"{D_TOKEN}")
+http_server_state = HTTPServerState(HOST, S_TOKEN)
+server_state = asyncio.run(track_state(HOST, http_server_state))
+
