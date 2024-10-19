@@ -167,8 +167,8 @@ async def on_ready():
 async def main():
     http_server_state = HTTPServerState(HOST, S_TOKEN)
     await asyncio.gather(
-        track_state(HOST, http_server_state),
-        bot.start(f"{D_TOKEN}")
+        bot.start(f"{D_TOKEN}"),
+        track_state(HOST, http_server_state)
     )
 
 
