@@ -22,7 +22,7 @@ logger = log.setup_logger()
 
 
 class LWAResponse:
-    def __init__(self, protocol_magic, message_type, protocol_version, response_cookie, server_state, server_net_cl, server_flags, num_sub_states):
+    def __init__(self, protocol_magic, message_type, protocol_version, response_cookie, server_state, server_net_cl, server_flags, num_sub_states, sub_states):
         self.protocol_magic = protocol_magic
         self.message_type = message_type
         self.protocol_version = protocol_version
@@ -31,6 +31,7 @@ class LWAResponse:
         self.server_net_cl = server_net_cl
         self.server_flags = server_flags
         self.num_sub_states = num_sub_states
+        self.sub_states = sub_states
 
 
 class HTTPServerState:
@@ -103,6 +104,7 @@ def poll_server_state(host, port, poll_interval=0.05):
             header_format = '<HBBQBIQB'
             header_size = struct.calcsize(header_format)
             state = LWAResponse(*struct.unpack_from(header_format, response, 0))
+            print(state.sub_states)
             sub_states_size = state.num_sub_states * 3
             server_name_length_offset = header_size + sub_states_size
             server_name_length = struct.unpack_from('<H', response, server_name_length_offset)[0]
