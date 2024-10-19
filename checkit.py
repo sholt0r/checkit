@@ -123,7 +123,7 @@ def poll_server_state(host, port, poll_interval=0.05):
         c_sock.close()
 
 
-async def track_state(host, http_server_state, port=7777, poll_interval=0.05, previous_state=None):
+def track_state(host, http_server_state, port=7777, poll_interval=0.05, previous_state=None):
     while True:
         try:
             state = poll_server_state(host, port)
@@ -138,6 +138,7 @@ async def track_state(host, http_server_state, port=7777, poll_interval=0.05, pr
             time.sleep(poll_interval)
         except:
             continue
+
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -162,7 +163,7 @@ async def restart(ctx):
 
 
 http_server_state = HTTPServerState(HOST, S_TOKEN)
-asyncio.create_task(track_state(HOST, http_server_state))
+track_state_task = asyncio.create_task(track_state(HOST, http_server_state))
 
 
 bot.run(f"{D_TOKEN}")
