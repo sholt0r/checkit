@@ -1,6 +1,6 @@
-import os, discord, socket, struct, time, select 
+import os, discord, socket, struct, time, select, asyncio
 import requests as re
-from discord.ext import commands, tasks
+from discord.ext import commands
 from common import log
 
 
@@ -123,21 +123,21 @@ def poll_server_state(host, port, poll_interval=0.05):
         c_sock.close()
 
 
-@tasks.loop(seconds=0.05)
 async def track_state(host, http_server_state, port=7777, poll_interval=0.05, previous_state=None):
-    try:
-        state = poll_server_state(host, port)
-        if previous_state is None:
+    while True:
+        try:
+            state = poll_server_state(host, port)
+            if previous_state is None:
+                previous_state = state
+
+            if state.num_sub_states != previous_state.num_sub_states:
+                http_server_state.update_local_state()
+                logger.info("State Updated")
+
             previous_state = state
-
-        if state.num_sub_states != previous_state.num_sub_states:
-            http_server_state.update_local_state()
-            logger.info("State Updated")
-
-        previous_state = state
-        time.sleep(poll_interval)
-    except:
-        return
+            time.sleep(poll_interval)
+        except:
+            continue
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -162,7 +162,7 @@ async def restart(ctx):
 
 
 http_server_state = HTTPServerState(HOST, S_TOKEN)
-track_state.start(HOST, http_server_state)
+asyncio.create_task(track_state(HOST, http_server_state))
 
 
 bot.run(f"{D_TOKEN}")
