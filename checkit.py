@@ -145,11 +145,6 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='ficsit ', intents=intents)
 
 
-@bot.event
-async def on_ready():
-    logger.info(f"Logged on as {bot.user} (ID: {bot.user.id})")
-
-
 @bot.hybrid_command()
 async def status(ctx):
     logger.info("Status command issued.")
@@ -160,6 +155,13 @@ async def status(ctx):
 async def restart(ctx):
     logger.info("Restart command issued.")
     await ctx.send("Restarting server.")
+
+
+@bot.event
+async def on_ready():
+    logger.info(f"Logged on as {bot.user} (ID: {bot.user.id})")
+    await bot.tree.sync()
+    logger.info("Commands synced.")
 
 
 async def main():
