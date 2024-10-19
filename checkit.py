@@ -143,6 +143,7 @@ async def track_state(host, http_server_state, port=7777, poll_interval=0.05, pr
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix='ficsit ', intents=intents)
+http_server_state = HTTPServerState(HOST, S_TOKEN)
 
 
 @bot.hybrid_command()
@@ -164,13 +165,12 @@ async def on_ready():
     logger.info("Commands synced.")
 
 
-async def main(bot):
-    http_server_state = HTTPServerState(HOST, S_TOKEN)
+async def main(bot, http_server_state):
     await asyncio.gather(
         bot.start(f"{D_TOKEN}"),
         track_state(HOST, http_server_state)
     )
 
 
-asyncio.run(main(bot))
+asyncio.run(main(bot, http_server_state))
 
