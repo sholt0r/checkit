@@ -123,7 +123,7 @@ def poll_server_state(host, port, poll_interval=0.05):
         c_sock.close()
 
 
-def track_state(host, http_server_state, port=7777, poll_interval=0.05, previous_state=None):
+async def track_state(host, http_server_state, port=7777, poll_interval=0.05, previous_state=None):
     while True:
         try:
             state = poll_server_state(host, port)
@@ -163,8 +163,12 @@ async def restart(ctx):
 
 
 http_server_state = HTTPServerState(HOST, S_TOKEN)
-asyncio.create_task(track_state(HOST, http_server_state))
 
+async def main():
+    await asyncio.gather(
+        track_state(HOST, http_server_state),
+        bot.start(f"{D_TOKEN}")
+    )
 
-bot.run(f"{D_TOKEN}")
+asyncio.run(main())
 
