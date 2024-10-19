@@ -163,7 +163,7 @@ async def restart(ctx):
 
 
 http_server_state = HTTPServerState(HOST, S_TOKEN)
-track_state_task = asyncio.create_task(track_state(HOST, http_server_state))
+asyncio.create_task(track_state(HOST, http_server_state))
 
 
 bot.run(f"{D_TOKEN}")
