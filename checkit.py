@@ -135,7 +135,7 @@ async def track_state(host, http_server_state, port=7777, poll_interval=0.05, pr
                 logger.info("State Updated")
 
             previous_state = state
-            time.sleep(poll_interval)
+            await asyncio.sleep(poll_interval)
         except:
             continue
 
