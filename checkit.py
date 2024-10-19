@@ -164,7 +164,7 @@ async def on_ready():
     logger.info("Commands synced.")
 
 
-async def main():
+async def main(bot):
     http_server_state = HTTPServerState(HOST, S_TOKEN)
     await asyncio.gather(
         bot.start(f"{D_TOKEN}"),
@@ -172,5 +172,5 @@ async def main():
     )
 
 
-asyncio.run(main())
+asyncio.run(main(bot))
 
