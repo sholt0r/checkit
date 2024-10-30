@@ -21,8 +21,8 @@ MESSAGE_TYPE_RESPONSE = 1
 logger = log.setup_logger()
 
 
-class LWAResponse:
-    def __init__(self, protocol_magic, message_type, protocol_version, response_cookie, server_state, server_net_cl, server_flags, num_sub_states, sub_states):
+class lwa_response:
+    def __init__(self, protocol_magic, message_type, protocol_version, response_cookie, server_state, server_net_cl, server_flags, num_sub_states, game_state=None):
         self.protocol_magic = protocol_magic
         self.message_type = message_type
         self.protocol_version = protocol_version
@@ -31,10 +31,10 @@ class LWAResponse:
         self.server_net_cl = server_net_cl
         self.server_flags = server_flags
         self.num_sub_states = num_sub_states
-        self.sub_states = sub_states
+        self.game_state = game_state
 
 
-class HTTPServerState:
+class http_server_state:
     def __init__(self, host, token, port=7777):
         self.host = host
         self.port = port
@@ -103,9 +103,15 @@ def poll_server_state(host, port, poll_interval=0.05):
             
             header_format = '<HBBQBIQB'
             header_size = struct.calcsize(header_format)
-            state = LWAResponse(*struct.unpack_from(header_format, response, 0))
-            print(state.sub_states)
+
+            state = lwa_response(*struct.unpack_from(header_format, response, 0))
+
             sub_states_size = state.num_sub_states * 3
+            for i in range(0, sub_states_size):
+                sub_state = struct.unpack_from('<QH', response, 22 + i)
+                if sub_state == 0:
+                    state.game_state = sub_state[1]
+
             server_name_length_offset = header_size + sub_states_size
             server_name_length = struct.unpack_from('<H', response, server_name_length_offset)[0]
 
@@ -120,6 +126,8 @@ def poll_server_state(host, port, poll_interval=0.05):
 
             return state
 
+    except:
+        return False
 
     finally:
         c_sock.close()
@@ -132,7 +140,7 @@ async def track_state(host, http_server_state, port=7777, poll_interval=0.05, pr
             if previous_state is None:
                 previous_state = state
 
-            if state.num_sub_states != previous_state.num_sub_states:
+            if state.game_state != previous_state.game_state:
                 http_server_state.update_local_state()
                 logger.info("State Updated")
 
@@ -145,13 +153,13 @@ async def track_state(host, http_server_state, port=7777, poll_interval=0.05, pr
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix='ficsit ', intents=intents)
-http_server_state = HTTPServerState(HOST, S_TOKEN)
+http_state = http_server_state(HOST, S_TOKEN)
 
 
 @bot.hybrid_command()
 async def status(ctx):
     logger.info("Status command issued.")
-    await ctx.send(f"Active Session: {http_server_state.active_session}\nNumber of Players: {http_server_state.num_players}/{http_server_state.player_limit}\nTech Tier: {http_server_state.tech_tier}")
+    await ctx.send(f"Active Session: {http_state.active_session}\nNumber of Players: {http_state.num_players}/{http_state.player_limit}\nTech Tier: {http_state.tech_tier}")
 
 
 @bot.hybrid_command()
@@ -174,5 +182,5 @@ async def main(bot, http_server_state):
     )
 
 
-asyncio.run(main(bot, http_server_state))
+asyncio.run(main(bot, http_state))
 
