@@ -107,10 +107,7 @@ def poll_server_state(host, port, poll_interval=0.05):
             state = lwa_response(*struct.unpack_from(header_format, response, 0))
 
             sub_states_size = state.num_sub_states * 3
-            for i in range(0, sub_states_size):
-                sub_state = struct.unpack_from('<QH', response, 22 + i)
-                if sub_state == 0:
-                    state.game_state = sub_state[1]
+            sub_state = struct.unpack_from('<QH', response, 22)
 
             server_name_length_offset = header_size + sub_states_size
             server_name_length = struct.unpack_from('<H', response, server_name_length_offset)[0]
